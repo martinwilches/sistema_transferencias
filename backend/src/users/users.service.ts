@@ -1,21 +1,20 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
-    private users: any[] = [] // simulacion de una base de datos con un array en memoria
+    constructor(
+        @InjectRepository(User)
+        private usersRepository: Repository<User>
+    ) {}
 
     // metodo que recibe un DTO y se encarga de crear un nuevo usuario
-    create(createUserDto: CreateUserDto) {
-        const newUser = {
-            id: Date.now(), // id simulado con el timestamp actual
-            ...createUserDto // name, email e initialBalance del DTO
-        };
+    async create(createUserDto: CreateUserDto): Promise<User> {
+        const user = this.usersRepository.create(createUserDto)
 
-        // guardar el usuario en el array (-- base de datos simulada --)
-        this.users.push(newUser);
-
-        // retornar el objeto con la informacion del nuevo usuario creado
-        return newUser;
+        return await this.usersRepository.save(user)
     }
 }
