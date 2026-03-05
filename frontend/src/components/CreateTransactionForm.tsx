@@ -1,19 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState } from "react"
+import api from "../api/axios";
 
-import api from '../api/axios'
-
-// interfaz de los datos del formulario
 interface FormData {
-    name: string;
-    email: string;
-    initialBalance: number | string;
+    fromEmail: string;
+    toEmail: string;
+    amount: number | string;
 }
 
-const CreateUserForm = () => {
+const CreateTransactionForm = () => {
     const [formData, setFormData] = useState<FormData>({
-        name: '',
-        email: '',
-        initialBalance: ''
+        fromEmail: '',
+        toEmail: '',
+        amount: ''
     })
 
     const [loading, setLoading] = useState(false)
@@ -33,53 +31,42 @@ const CreateUserForm = () => {
         e.preventDefault()
 
         // validaciones del formulario
-        const { name, email, initialBalance } = formData
+        const { fromEmail, toEmail, amount } = formData
 
-        if (!name.trim()) {
-            setWarning('El nombre es obligatorio')
+        if (!fromEmail.trim()) {
+            setWarning('El email origen es obligatorio')
             return
         }
 
-        if (!email.trim()) {
-            setWarning('El email es obligatorio')
+        if (!toEmail.trim()) {
+            setWarning('El email destino es obligatorio')
             return
         }
 
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            setWarning('El formato del email no es válido')
+        const amountNumber = Number(amount)
+        if (isNaN(amountNumber) || amountNumber <= 0) {
+            setWarning('El monto de la transacción debe ser mayor a 0')
             return
         }
 
-        if (!email.trim()) {
-            setWarning('El email es obligatorio')
-            return
-        }
-
-        const balanceNumber = Number(initialBalance)
-        if (isNaN(balanceNumber) || balanceNumber <= 0) {
-            setWarning('El saldo inicial debe ser mayor a 0')
-            return
-        }
-
-        setWarning('') // limpiar advertencias de la validación del formulario
+        setWarning('')
         setLoading(true)
 
         try {
-            await api.post('/users', formData)
+            await api.post('/transactions', formData)
 
             setError('')
-            setMessage('Usuario creado correctamente.')
+            setMessage('Transacción creada correctamente')
 
-            // limpiar la información previamente cargada en el formulario
             setFormData({
-                name: '',
-                email: '',
-                initialBalance: ''
+                fromEmail: '',
+                toEmail: '',
+                amount: ''
             })
-        } catch (error: any) {
+        } catch(error: any) {
             console.error('Error: ', error)
 
-            setError(error.response?.data?.message || 'Ocurrio un error al crear el usuario. Intentelo nuevamente.')
+            setError(error.response?.data?.message || 'Ocurrió un error al crear la transacción')
         } finally {
             setLoading(false)
             resetMessages()
@@ -94,10 +81,10 @@ const CreateUserForm = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
             <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-                    CREAR USUARIO
+                    CREAR TRANSACCIÓN
                 </h2>
 
                 {message &&
@@ -121,27 +108,13 @@ const CreateUserForm = () => {
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Nombre
-                        </label>
-                        <input
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            placeholder="Juan Peréz"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                            onChange={handleChange}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Email
+                            Email origen
                         </label>
                         <input
                             type="email"
-                            name="email"
-                            value={formData.email}
-                            placeholder="correo@mail.com"
+                            name="fromEmail"
+                            value={formData.fromEmail}
+                            placeholder="origen@mail.com"
                             className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                             onChange={handleChange}
                         />
@@ -149,24 +122,39 @@ const CreateUserForm = () => {
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Saldo Inicial
+                            Email destino
+                        </label>
+                        <input
+                            type="email"
+                            name="toEmail"
+                            value={formData.toEmail}
+                            placeholder="destino@mail.com"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Monto
                         </label>
                         <input
                             type="number"
-                            name="initialBalance"
-                            value={formData.initialBalance}
+                            name="amount"
+                            value={formData.amount}
                             placeholder="0.00"
                             className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
                             onChange={handleChange}
                         />
                     </div>
 
+                    {/* Button */}
                     <button
                         type="submit"
                         disabled={loading}
                         className="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition duration-200 disabled:opacity-50 disabled:pointer-events-none"
                     >
-                        {loading ? 'Creando...' : 'Crear usuario'}
+                        { loading ? 'Creando...' : 'Crear Transacción' }
                     </button>
                 </form>
             </div>
@@ -174,4 +162,4 @@ const CreateUserForm = () => {
     )
 }
 
-export default CreateUserForm
+export default CreateTransactionForm

@@ -22,6 +22,14 @@ nest generate controller users
 nest generate service users
 ```
 
+### Transactions
+
+```bash
+nest generate module transactions
+nest generate controller transactions
+nest generate service transactions
+```
+
 ## Endpoints
 
 Crear usuario

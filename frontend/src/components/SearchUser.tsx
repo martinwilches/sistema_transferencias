@@ -25,6 +25,7 @@ const SearchUser = () => {
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault()
 
+        // validaciones del formulario
         if (!email.trim()) {
             setWarning('El email es obligatorio')
             return
@@ -101,10 +102,6 @@ const SearchUser = () => {
                     <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <div className="flex flex-col gap-1 text-sm text-gray-600">
                             <p className="flex">
-                                <span className="flex-1 font-medium text-gray-800">ID:</span>
-                                <span className="flex-1">{user.id}</span>
-                            </p>
-                            <p className="flex">
                                 <span className="flex-1 font-medium text-gray-800">Nombre:</span>
                                 <span className="flex-1">{user.name}</span>
                             </p>
@@ -113,7 +110,7 @@ const SearchUser = () => {
                                 <span className="flex-1">{user.email}</span>
                             </p>
                             <p className="flex">
-                                <span className="flex-1 font-medium text-gray-800">Saldo Inicial:</span>
+                                <span className="flex-1 font-medium text-gray-800">Saldo:</span>
                                 <span className="flex-1">{new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(user.initialBalance)}</span>
                             </p>
                         </div>

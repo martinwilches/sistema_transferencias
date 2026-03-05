@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { UsersModule } from './users/users.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 // modulo raiz - punto de entrada de la aplicación
 @Module({
@@ -22,7 +23,8 @@ import { UsersModule } from './users/users.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    UsersModule // modulo de usuarios
+    UsersModule, // modulo de usuarios
+    TransactionsModule // modulo de transacciones
   ]
 })
 export class AppModule {}
