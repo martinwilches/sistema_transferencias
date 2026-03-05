@@ -22,6 +22,26 @@ nest generate controller users
 nest generate service users
 ```
 
+## Endpoints
+
+Crear usuario
+
+```http
+POST /users
+
+{
+    name: string,
+    email: string,
+    initialBalance: number
+}
+```
+
+Obtener usuario por email
+
+```http
+GET /users/:email
+```
+
 ## Base de datos
 
 Consultar los registros almacenados en base de datos desde la terminal.

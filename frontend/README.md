@@ -11,3 +11,9 @@ npm install tailwindcss @tailwindcss/vite
 ```bash
 npm install axios
 ```
+
+### react-router
+
+```bash
+npm install react-router-dom
+```

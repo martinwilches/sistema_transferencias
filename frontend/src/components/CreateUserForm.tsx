@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import api from '../api/axios';
+import api from '../api/axios'
 
 // interfaz de los datos del formulario
 interface FormData {
@@ -67,6 +67,7 @@ const CreateUserForm = () => {
         try {
             await api.post('/users', formData)
 
+            setError('')
             setMessage('Usuario creado correctamente.')
 
             // limpiar la información previamente cargada en el formulario
@@ -75,10 +76,10 @@ const CreateUserForm = () => {
                 email: '',
                 initialBalance: ''
             })
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error: ', error)
 
-            setError('Ocurrio un error al crear el usuario. Intentelo nuevamente.')
+            setError(error.response?.data?.message || 'Ocurrio un error al crear el usuario. Intentelo nuevamente.')
         } finally {
             setLoading(false)
             resetMessages()
@@ -93,7 +94,7 @@ const CreateUserForm = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 ">
             <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
                     CREAR USUARIO

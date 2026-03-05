@@ -1,4 +1,5 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 
@@ -9,9 +10,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
-    @Post()
+    @Post() // `/users`
     // @Body extrae el cuerpo de la peticion y lo mapea en el DTO
     create(@Body() createUserDto: CreateUserDto) {
         return this.usersService.create(createUserDto)
+    }
+
+    @Get(':email') // `/users/:email`
+    findByEmail(@Param('email') email: string) {
+        return this.usersService.findByEmail(email)
     }
 }
