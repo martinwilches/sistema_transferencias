@@ -14,6 +14,7 @@ const SearchTransactionsForm = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([])
 
     const [loading, setLoading] = useState(false)
+    const [message, setMessage] = useState('')
     const [warning, setWarning] = useState('')
     const [error, setError] = useState('')
 
@@ -52,12 +53,42 @@ const SearchTransactionsForm = () => {
         }
     }
 
+    const handleRevertTransaction = async (id: number) => {
+        try {
+            const response = await api.put('/transactions/revert', {
+                transactionId: id
+            })
+
+            const updateTransactions = transactions.filter(t => t.id !== response.data.id)
+            setTransactions(updateTransactions)
+
+            setMessage('Transacción revertida exitosamente')
+        } catch(error: any) {
+            setError(error.response?.data?.message || 'Ocurrió un error al intentar revertir la transacción')
+        }
+    }
+
+    // validar si la transaccion fue creada durante los ultimos 5 minutos
+    const isRevertible = (createdAt: string): boolean => {
+        const transactionDate = new Date(createdAt).getTime()
+        const now = new Date().getTime()
+        const diffInMinutes = (now - transactionDate) / 1000 / 60
+
+        return diffInMinutes <= 1
+    }
+
     return (
         <div className="flex items-center justify-center bg-gray-100 p-6 md:min-h-screen">
             <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
                     BUSCAR TRANSACCIONES
                 </h2>
+
+                {message &&
+                    <p className='my-4 py-2 bg-green-500 text-white text-center font-medium rounded-lg'>
+                        {message}
+                    </p>
+                }
 
                 {warning &&
                     <p className='my-4 py-2 bg-orange-400 text-white text-center font-medium rounded-lg'>
@@ -105,6 +136,7 @@ const SearchTransactionsForm = () => {
                                     <th className="px-6 py-3">Origen</th>
                                     <th className="px-6 py-3">Destino</th>
                                     <th className="px-6 py-3 text-right">Monto</th>
+                                    <th className="px-6 py-3 text-center">Acciones</th>
                                 </tr>
                             </thead>
 
@@ -131,6 +163,16 @@ const SearchTransactionsForm = () => {
                                                 style: 'currency',
                                                 currency: 'COP'
                                             }).format(transaction.amount)}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {isRevertible(transaction.createdAt) && (
+                                                <button
+                                                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors duration-200n"
+                                                    onClick={() => handleRevertTransaction(transaction.id)}
+                                                >
+                                                    Revertir
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}

@@ -6,6 +6,7 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 
 import { Transaction } from './entities/transaction.entity';
 import { User } from '../users/entities/user.entity';
+import { RevertTransactionDto } from './dto/revert-transaction.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -50,7 +51,7 @@ export class TransactionsService {
 
         // validar que el usuario que realiza la transaccion tenga saldo suficiente
         if (Number(fromUser.initialBalance) < amountNumber) {
-            throw new BadRequestException(`Saldo insuficiente. Balance disponible ${fromUser.initialBalance}`)
+            throw new BadRequestException(`Saldo insuficiente. Balance disponible $${fromUser.initialBalance}`)
         }
 
         const queryRunner = this.dataSource.createQueryRunner()
@@ -91,8 +92,8 @@ export class TransactionsService {
     async findByEmail(email: string): Promise<Transaction[]> {
         const transactions = await this.transactionsRepository.find({
             where: [
-                { fromEmail: Like(`${email}%`) },
-                { toEmail: Like(`${email}%`) }
+                { fromEmail: Like(`${email}%`), isReverted: false },
+                { toEmail: Like(`${email}%`), isReverted: false }
             ],
             order: {
                 createdAt: 'DESC' // transacciones ordenadas de forma descendente
@@ -102,5 +103,67 @@ export class TransactionsService {
         if(!transactions.length) throw new NotFoundException('No se han encontrado transacciones')
 
         return transactions
+    }
+
+    async revert(revertTransactionDto: RevertTransactionDto): Promise<Transaction> {
+        const { transactionId } = revertTransactionDto;
+
+        const transaction = await this.transactionsRepository.findOne({
+            where: { id: transactionId }
+        })
+
+        if (!transaction) throw new NotFoundException(`No se encontró la transacción con ID: ${transactionId}`)
+
+        if (transaction.isReverted) throw new BadRequestException(`La transacción con ID: ${transactionId} ya fue revertida`)
+
+        // Buscamos ambos usuarios involucrados en la transacción original
+        const fromUser = await this.usersRepository.findOne({
+            where: { email: transaction.fromEmail }
+        })
+
+        if (!fromUser) throw new NotFoundException(`No se encontró el usuario: ${transaction.fromEmail}`)
+
+        const toUser = await this.usersRepository.findOne({
+            where: { email: transaction.toEmail }
+        })
+
+        if (!toUser) throw new NotFoundException(`No se encontró el usuario: ${transaction.toEmail}`)
+
+        // verificar que el receptor de la transaccion tenga el saldo suficiente para devolver el dinero
+        if (Number(toUser.initialBalance) < Number(transaction.amount)) {
+            throw new BadRequestException(
+                `El usuario ${toUser.email} no tiene saldo suficiente para revertir. ` +
+                `Balance disponible: $${toUser.initialBalance}`
+            );
+        }
+
+        const queryRunner = this.dataSource.createQueryRunner()
+
+        // establecer la conexión y abrir la transacción
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+
+        try {
+            // devolver el monto al emisor orignal
+            fromUser.initialBalance = Number(fromUser.initialBalance) + Number(transaction.amount)
+            await queryRunner.manager.save(fromUser)
+
+            // descontar el monto al receptor original
+            toUser.initialBalance = Number(toUser.initialBalance) - Number(transaction.amount)
+            await queryRunner.manager.save(toUser)
+
+            // marcar la transaccion como revertida
+            transaction.isReverted = true
+            const updatedTransaction = await queryRunner.manager.save(transaction)
+
+            await queryRunner.commitTransaction()
+
+            return updatedTransaction
+        } catch (error) {
+            await queryRunner.rollbackTransaction()
+            throw error
+        } finally {
+            await queryRunner.release()
+        }
     }
 }

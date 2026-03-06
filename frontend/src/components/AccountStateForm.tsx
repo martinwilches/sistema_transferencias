@@ -43,10 +43,14 @@ const AccountStateForm = () => {
 
             const tx = response.data.transactions
 
-            setError('')
+            if (tx.length === 0) {
+                setError('No se han realizado transacciones')
+            } else {
+                setError('')
+            }
             setTransactions(tx)
 
-            // // calcular valores a mostrar en el balance de la vista
+            // calcular valores a mostrar en el balance de la vista
             setBalanceData(tx, response.data.balance)
         } catch (error: any) {
             setError(error.response?.data?.message || 'Ocurrió un error al consultar el estado de las transacciones')

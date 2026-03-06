@@ -51,15 +51,13 @@ export class UsersService {
 
         const transactions = await this.transactionsRepository.find({
             where: [
-                { fromEmail: email },
-                { toEmail: email }
+                { fromEmail: email, isReverted: false },
+                { toEmail: email, isReverted: false }
             ],
             order: {
                 createdAt: 'DESC' // transacciones ordenadas de forma descendente
             }
         })
-
-        if(!transactions.length) throw new NotFoundException('No se han encontrado transacciones')
 
         return {
             balance: user.initialBalance,

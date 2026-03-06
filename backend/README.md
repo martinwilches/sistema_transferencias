@@ -64,7 +64,25 @@ POST /transactions
 
 Buscar transferencias por email
 
+```http
 GET /transactions?email=
+```
+
+Estado de cuenta
+
+```http
+GET /users/:email/statement
+```
+
+Revertir una transacción
+
+```http
+PUT /transactions/revert
+
+{
+    transactionId: number
+}
+```
 
 ## Base de datos
 

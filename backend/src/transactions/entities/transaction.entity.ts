@@ -14,6 +14,9 @@ export class Transaction {
     @Column('decimal', { default: 0 })
     amount: number;
 
+    @Column({ default: false })
+    isReverted: boolean; // campo que indica si la transaccion fue revertida
+
     @CreateDateColumn({
         transformer: {
             to: (value: Date) => value, // guardar normal la fecha
