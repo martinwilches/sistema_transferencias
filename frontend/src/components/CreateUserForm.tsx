@@ -94,7 +94,7 @@ const CreateUserForm = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="flex items-center justify-center bg-gray-100 md:min-h-screen">
             <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
                     CREAR USUARIO

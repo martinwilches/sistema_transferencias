@@ -20,4 +20,9 @@ export class UsersController {
     findByEmail(@Param('email') email: string) {
         return this.usersService.findByEmail(email)
     }
+
+    @Get(':email/statement') // `/users/:email/statement`
+    findAccountState(@Param('email') email: string) {
+        return this.usersService.findAccountState(email)
+    }
 }

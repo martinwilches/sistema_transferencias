@@ -42,7 +42,7 @@ const SearchTransactionsForm = () => {
             setTransactions(response.data)
         } catch (error: any) {
             setTransactions([])
-            setError(error.response?.data?.message)
+            setError(error.response?.data?.message || 'Ocurrió un error al consultar las transacciones')
         } finally {
             setLoading(false)
             setTimeout(() => {
@@ -53,7 +53,7 @@ const SearchTransactionsForm = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+        <div className="flex items-center justify-center bg-gray-100 p-6 md:min-h-screen">
             <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
                     BUSCAR TRANSACCIONES
@@ -96,7 +96,7 @@ const SearchTransactionsForm = () => {
                 </form>
 
                 {transactions.length > 0 && (
-                    <div className="overflow-x-auto mt-6 rounded-xl">
+                    <div className="overflow-x-auto mt-6 rounded-xl max-h-62.5">
                         <table className="min-w-full text-sm text-left text-gray-600">
 
                             <thead className="bg-gray-100 text-gray-700 uppercase text-xs">

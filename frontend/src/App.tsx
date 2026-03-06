@@ -4,6 +4,7 @@ import SearchTransactionsForm from './components/SearchTransactionsForm'
 import CreateTransactionForm from './components/CreateTransactionForm'
 import CreateUserForm from './components/CreateUserForm'
 import SearchUserForm from './components/SearchUserForm'
+import AccountStateForm from './components/AccountStateForm'
 
 function App() {
   return (
@@ -19,7 +20,7 @@ function App() {
           Crear transferencia
         </Link>
         <Link to="/search-transaction" className='underline underline-offset-3'>
-          Buscar transacción
+          Buscar transacciones
         </Link>
         <Link to="/account-state" className='underline underline-offset-3'>
           Estado de cuenta
@@ -38,6 +39,9 @@ function App() {
 
         {/* buscar transacciones por email */}
         <Route path='/search-transaction' element={<SearchTransactionsForm />} />
+
+        {/* estado de cuenta */}
+        <Route path='/account-state' element={<AccountStateForm />} />
       </Routes>
     </BrowserRouter>
   )

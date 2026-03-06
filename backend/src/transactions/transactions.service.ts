@@ -3,6 +3,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateTransactionDto } from './dto/create-transaction.dto';
+
 import { Transaction } from './entities/transaction.entity';
 import { User } from '../users/entities/user.entity';
 
@@ -22,6 +23,10 @@ export class TransactionsService {
     async create(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
         const { fromEmail, toEmail, amount } = createTransactionDto
 
+        if (fromEmail === toEmail) {
+            throw new BadRequestException('El email origen no puede ser igual al email destinatario')
+        }
+
         // buscar si existe el usuario origen en base de datos
         const fromUser = await this.usersRepository.findOne({
             where: { email: fromEmail }
@@ -40,9 +45,12 @@ export class TransactionsService {
             throw new NotFoundException('El email destino no se encuentra registrado')
         }
 
+        // convertir monto a formato número
+        const amountNumber = Number(amount)
+
         // validar que el usuario que realiza la transaccion tenga saldo suficiente
-        if (fromUser.initialBalance < amount) {
-            throw new BadRequestException(`Saldo insuficiente. Balance disponible ${fromUser.initialBalance}, monto mínimo requerido ${amount}`)
+        if (Number(fromUser.initialBalance) < amountNumber) {
+            throw new BadRequestException(`Saldo insuficiente. Balance disponible ${fromUser.initialBalance}`)
         }
 
         const queryRunner = this.dataSource.createQueryRunner()
@@ -52,7 +60,6 @@ export class TransactionsService {
         await queryRunner.startTransaction()
 
         try {
-            const amountNumber = Number(amount)
             // descontar el monto del balance del emisor
             fromUser.initialBalance = Number(fromUser.initialBalance) - amountNumber
             await queryRunner.manager.save(fromUser)
@@ -82,7 +89,7 @@ export class TransactionsService {
     }
 
     async findByEmail(email: string): Promise<Transaction[]> {
-        let transactions = await this.transactionsRepository.find({
+        const transactions = await this.transactionsRepository.find({
             where: [
                 { fromEmail: Like(`${email}%`) },
                 { toEmail: Like(`${email}%`) }
