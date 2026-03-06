@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
 
 @Entity('transacciones')
 export class Transaction {
@@ -13,4 +13,12 @@ export class Transaction {
 
     @Column('decimal', { default: 0 })
     amount: number;
+
+    @CreateDateColumn({
+        transformer: {
+            to: (value: Date) => value, // guardar normal la fecha
+            from: (value: Date) => value.toLocaleString('sv-SE').split('.')[0].replace('T', ' ') // recuperar la fecha formateada
+        }
+    })
+    createdAt: string;
 }

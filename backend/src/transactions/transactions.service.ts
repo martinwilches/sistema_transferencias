@@ -1,4 +1,4 @@
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -79,5 +79,21 @@ export class TransactionsService {
         } finally {
             await queryRunner.release()
         }
+    }
+
+    async findByEmail(email: string): Promise<Transaction[]> {
+        let transactions = await this.transactionsRepository.find({
+            where: [
+                { fromEmail: Like(`${email}%`) },
+                { toEmail: Like(`${email}%`) }
+            ],
+            order: {
+                createdAt: 'DESC' // transacciones ordenadas de forma descendente
+            }
+        })
+
+        if(!transactions.length) throw new NotFoundException('No se han encontrado transacciones')
+
+        return transactions
     }
 }

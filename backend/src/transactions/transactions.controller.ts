@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
@@ -10,5 +10,10 @@ export class TransactionsController {
     @Post() // `/transactions`
     create(@Body() createTransactionDto: CreateTransactionDto) {
         return this.transactionsService.create(createTransactionDto)
+    }
+
+    @Get()
+    findByEmail(@Query('email') email: string) {
+        return this.transactionsService.findByEmail(email)
     }
 }

@@ -9,7 +9,7 @@ interface User {
     initialBalance: number
 }
 
-const SearchUser = () => {
+const SearchUserForm = () => {
     const [email, setEmail] = useState('')
     const [user, setUser] = useState<User | null>(null)
 
@@ -121,4 +121,4 @@ const SearchUser = () => {
     )
 }
 
-export default SearchUser
+export default SearchUserForm

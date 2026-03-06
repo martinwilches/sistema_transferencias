@@ -38,8 +38,18 @@ const CreateTransactionForm = () => {
             return
         }
 
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fromEmail)) {
+            setWarning('El formato del email origen no es válido')
+            return
+        }
+
         if (!toEmail.trim()) {
             setWarning('El email destino es obligatorio')
+            return
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(toEmail)) {
+            setWarning('El formato del email destino no es válido')
             return
         }
 
@@ -56,7 +66,7 @@ const CreateTransactionForm = () => {
             await api.post('/transactions', formData)
 
             setError('')
-            setMessage('Transacción creada correctamente')
+            setMessage('Transferencia realizada correctamente')
 
             setFormData({
                 fromEmail: '',
@@ -84,7 +94,7 @@ const CreateTransactionForm = () => {
         <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
             <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-                    CREAR TRANSACCIÓN
+                    CREAR TRANSFERENCIA
                 </h2>
 
                 {message &&
@@ -154,7 +164,7 @@ const CreateTransactionForm = () => {
                         disabled={loading}
                         className="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition duration-200 disabled:opacity-50 disabled:pointer-events-none"
                     >
-                        { loading ? 'Creando...' : 'Crear Transacción' }
+                        { loading ? 'Creando...' : 'Crear Transferencia' }
                     </button>
                 </form>
             </div>

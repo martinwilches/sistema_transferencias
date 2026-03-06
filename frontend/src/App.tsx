@@ -1,8 +1,9 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
 
-import CreateUserForm from './components/CreateUserForm'
-import SearchUser from './components/SearchUser'
+import SearchTransactionsForm from './components/SearchTransactionsForm'
 import CreateTransactionForm from './components/CreateTransactionForm'
+import CreateUserForm from './components/CreateUserForm'
+import SearchUserForm from './components/SearchUserForm'
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
           Buscar usuario
         </Link>
         <Link to="/create-transaction" className='underline underline-offset-3'>
-          Crear transacción
+          Crear transferencia
         </Link>
         <Link to="/search-transaction" className='underline underline-offset-3'>
           Buscar transacción
@@ -30,10 +31,13 @@ function App() {
         <Route path='/' element={<CreateUserForm />} />
 
         {/* busqueda por email */}
-        <Route path='/search-user' element={<SearchUser />} />
+        <Route path='/search-user' element={<SearchUserForm />} />
 
         {/* transferencias */}
         <Route path="/create-transaction" element={<CreateTransactionForm />} />
+
+        {/* buscar transacciones por email */}
+        <Route path='/search-transaction' element={<SearchTransactionsForm />} />
       </Routes>
     </BrowserRouter>
   )

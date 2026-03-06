@@ -50,6 +50,22 @@ Obtener usuario por email
 GET /users/:email
 ```
 
+Crear transferencia
+
+```http
+POST /transactions
+
+{
+    fromEmail: string,
+    toEmail: string,
+    amount: number
+}
+```
+
+Buscar transferencias por email
+
+GET /transactions?email=
+
 ## Base de datos
 
 Consultar los registros almacenados en base de datos desde la terminal.
